@@ -1,0 +1,27 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nodejs
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nodejs
+  template:
+    metadata:
+      labels:
+        app: nodejs
+    spec:
+      containers:
+      - name: nodejs
+        image: us-central1-docker.pkg.dev/gcp-iti-401020/my-nodejs-repo/nodejs-app:1.0.0
+        ports:
+        - containerPort: 3000
+        env:
+        - name: DBuser
+          value: admin
+        - name: DBpass
+          value: password
+        - name: DBhosts
+          value: mongo-0.mongo,mongo-1.mongo,mongo-2.mongo
