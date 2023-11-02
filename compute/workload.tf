@@ -18,6 +18,7 @@ private_cluster_config {
     enable_private_nodes   = true 
     master_ipv4_cidr_block = "192.168.9.0/28"
 
+
      master_global_access_config {
     enabled = true
   }
@@ -34,7 +35,11 @@ private_cluster_config {
       display_name = "net1"
     }
 
+ 
+
   }
+
+  
   
 
  
@@ -65,6 +70,7 @@ resource "google_container_node_pool" "primary_node_pool" {
     oauth_scopes = [
       "https://www.googleapis.com/auth/cloud-platform"
     ]
+    service_account =  var.workload_service_account
   }
   depends_on = [ google_container_cluster.gke_cluster ]
 }

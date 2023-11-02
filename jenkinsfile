@@ -1,0 +1,74 @@
+
+pipeline {
+
+    agent any
+
+    parameters {
+        choice(name: 'operation', choices: ["build", "destroy"], description: 'Select operation')
+        choice(name: 'workspace', choices: ["dev", "prod"], description: 'Select environment')
+    }
+
+  
+
+    stages {
+
+        
+        stage('login to google cloud') {
+            steps {
+                withCredentials([file(credentialsId: 'gcp-secret', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) { 
+                    sh 'gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS'
+                 }
+            }
+        }
+
+        stage('Checkout') {
+            steps {
+                git (
+                    branch: 'infrastructure',
+                    credentialsId: 'github',
+                    url: 'https://github.com/HosHaggag/complete_automated_infrastructure.git'
+                    )
+            }
+        }
+
+
+
+        stage('Choose workspace') {
+            steps {
+              script {
+                 withCredentials([file(credentialsId: 'gcp-secret', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) { 
+                 echo 'Choosing workspace....'
+                sh 'terraform init '
+                sh "terraform workspace new ${params.workspace} || true" 
+                sh "terraform workspace select ${params.workspace} "
+                }
+                
+              }            
+            }
+        }
+
+        stage('plan') {
+            steps {
+                script {
+                     withCredentials([file(credentialsId: 'gcp-secret', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) { 
+
+                       sh "terraform plan --var-file=${params.workspace}.tfvars"
+                     }
+                }
+            }
+        }
+        stage(' apply') {
+            steps {
+                script {
+                    echo ' applying....'
+                    if (params.operation == 'destroy') {
+                        sh "terraform destroy --var-file=${params.workspace}.tfvars -auto-approve"
+                        return
+                    }
+                    sh "terraform plan --var-file=${params.workspace}.tfvars"
+                    sh "terraform apply --var-file=${params.workspace}.tfvars -auto-approve"
+                }
+            }
+        }
+    }
+}

@@ -34,10 +34,10 @@ variable "zone" {
   
 }
 
-variable "tf_service_account" {
-    description = "The service account to use for Terraform"
+variable "backend_bucket_name" {
+    description = "The name of the bucket you have created"
     type        = string
-    default = "terraform@gcp-iti-401020.iam.gserviceaccount.com"
-  
+    default = "terraform-staff"
   
 }
+

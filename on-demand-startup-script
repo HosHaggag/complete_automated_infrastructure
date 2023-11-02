@@ -1,0 +1,29 @@
+"echo ---------------------- JDK Intsallation ----------------------",
+sudo add-apt-repository ppa:openjdk-r/ppa
+sudo apt-get update && sudo apt-get install -y openjdk-11-jdk
+          
+"echo ---------------------- Kubectl Intsallation ----------------------",
+sudo apt-get install -y ca-certificates curl
+sudo apt-get install -y apt-transport-https
+sudo curl -fsSLo /etc/apt/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
+sudo echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main' | sudo tee /etc/apt/sources.list.d/kubernetes.list
+sudo apt-get update
+sudo apt-get install -y kubectl
+
+echo "---------------------- Docker Intsallation ----------------------",
+curl -fsSL https://get.docker.com -o get-docker.sh
+sudo sh get-docker.sh
+sudo systemctl enable docker.service 
+sudo systemctl enable containerd.service
+
+echo "---------------------- Helm Intsallation ----------------------"
+curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 ; sudo chmod 700 get_helm.sh
+sudo ./get_helm.sh
+echo ---------------------- GCP auth plugin Intsallation ----------------------
+sudo apt-get install -y apt-transport-https ca-certificates gnupg
+echo 'deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main' | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
+curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key --keyring /usr/share/keyrings/cloud.google.gpg add -
+sudo apt-get update && sudo apt-get install -y google-cloud-cli
+sudo apt-get install -y google-cloud-sdk-gke-gcloud-auth-plugin
+
+on-demand-managment

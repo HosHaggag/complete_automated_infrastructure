@@ -5,10 +5,16 @@ variable "project_id" {
 
 }
 
-variable "service_account" {
+variable "managment_service_account" {
 
   type = string
 
+}
+
+variable "workload_service_account" {
+
+  type = string
+  
 }
 
 variable "main_vpc" {

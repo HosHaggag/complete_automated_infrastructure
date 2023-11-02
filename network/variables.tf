@@ -22,7 +22,12 @@ variable "project_id" {
     type = string
 }
 
-variable "service_account" {
+variable "management_service_account" {
+    type = string
+  
+}
+
+variable "workload_service_account" {
     type = string
   
 }

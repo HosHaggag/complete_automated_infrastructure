@@ -11,7 +11,7 @@ resource "google_compute_instance" "managment_instance" {
   }
   
   service_account {
-    email  = var.service_account
+    email  = var.managment_service_account
     scopes = ["cloud-platform"]
 
   }
