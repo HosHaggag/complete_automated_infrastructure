@@ -1,2 +1,47 @@
 
 
+
+pipeline {
+
+
+    // add GCP cloud agent to run the pipeline on
+
+    agent {
+        label 'on-demand-mangment'
+    }
+
+
+ 
+
+  
+
+    stages {
+
+        
+        stage('login to google cloud') {
+            steps {
+                withCredentials([file(credentialsId: 'gcp-secret', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) { 
+                    sh 'gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS'
+                    sh 'gcloud config set project gcp-iti-401020'\
+                    sh 'gcloud config set compute/zone us-central1-a'
+                    sh 'gcloud container clusters get-credentials workload-cluster'
+
+                    dir('/root') {
+                        sh 'packer build .json'
+                    }
+                 }
+            }
+        }
+
+        stage('Checkout') {
+            steps {
+                git (
+                    branch: 'infrastructure',
+                    credentialsId: 'github',
+                    url: 'https://github.com/HosHaggag/complete_automated_infrastructure.git'
+                    )
+            }
+        }
+
+    }
+}

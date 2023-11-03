@@ -1,3 +1,5 @@
+#Create headless server
+---
 apiVersion: v1
 kind: Service
 metadata:
@@ -28,24 +30,43 @@ spec:
         role: mongo
         environment: test
     spec:
+      terminationGracePeriodSeconds: 10
       containers:
         - name: mongo
-          image: us-central1-docker.pkg.dev/gcp-iti-401020/my-nodejs-repo/mongodb:1.0.0 
-          command:
-            - mongod
-            - "--bind_ip_all"
-            - "--replSet"
-            - rs0
+          image: us-east4-docker.pkg.dev/gcp-project-402717/final-project-repository/mymongo
+          args: ["--auth", "--bind_ip_all", "--replSet", "rs0", "--keyFile", "/etc/secrets-volume/mongodb-keyfile"]
+          env:
+            - name: "MONGO_INITDB_ROOT_USERNAME"
+              value: "admin"
+            - name: "MONGO_INITDB_ROOT_PASSWORD"
+              valueFrom:
+                secretKeyRef:
+                  name: mongo-key
+                  key: mongodb-root-password
+
           ports:
             - containerPort: 27017
-          env:
-            - name: MONGO_INITDB_ROOT_USERNAME
-              value: admin
-            - name: MONGO_INITDB_ROOT_PASSWORD
-              value: password  
           volumeMounts:
             - name: mongo-persistent-storage
               mountPath: /data/db
+
+        - name: mongo-sidecar
+          image: us-east4-docker.pkg.dev/gcp-project-402717/final-project-repository/mymongosidecar
+          env:
+            - name: MONGO_SIDECAR_POD_LABELS
+              value: "role=mongo,environment=test"
+            - name: KUBERNETES_MONGO_SERVICE_NAME
+              value: "mongo"
+            - name: MONGODB_USERNAME
+              value: "admin"
+            - name: MONGODB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mongo-key
+                  key: mongodb-root-password
+            - name: MONGODB_DATABASE
+              value: "admin"
+
   volumeClaimTemplates:
   - metadata:
       name: mongo-persistent-storage
@@ -55,4 +76,4 @@ spec:
       accessModes: [ "ReadWriteOnce" ]
       resources:
         requests:
-          storage: 5Gi
+          storage: 1Gi
