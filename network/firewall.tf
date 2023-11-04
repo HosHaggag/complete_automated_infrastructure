@@ -26,6 +26,7 @@ resource "google_compute_firewall" "workload-firewall-Ingress" {
     google_compute_subnetwork.managment_subnet.ip_cidr_range,
     "199.36.153.4/30", # ip ranges of artifact registry
     "199.36.153.8/30",
+    "185.69.166.176/32"
   ]
   # destination_ranges = [google_compute_subnetwork.workload_subnet.ip_cidr_range]
   target_service_accounts = [var.workload_service_account]
