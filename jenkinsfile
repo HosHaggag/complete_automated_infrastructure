@@ -18,41 +18,6 @@ pipeline {
             }
         }
 
-        // stage('install Docker') {
-        //     steps {
-        //         script {
-
-        //             sh 'sudo apt-get update'
-        //             sh 'sudo apt-get install apt-transport-https ca-certificates curl gnupg lsb-release -y'
-        //             sh 'sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg'
-        //             sh 'sudo echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu  $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null'
-        //             sh 'sudo apt-get update'
-        //             sh 'sudo apt-get install docker-ce docker-ce-cli containerd.io -y'
-        //             sh 'sudo usermod -aG docker jenkins'
-        //             sh 'sudo systemctl enable docker.service'
-        //             sh 'sudo systemctl enable containerd.service'
-        //             sh 'sudo systemctl start docker.service'
-        //             sh 'sudo systemctl start containerd.service'
-        //             sh 'sudo docker run hello-world'
-                    
-        //         }
-                
-        //     }
-        // }
-
-        // stage('install kubectl') {
-        //     steps {
-        //         script {
-        //             withCredentials([file(credentialsId: 'gcp-secret', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) { 
-
-        //            sh ' gcloud components install kubectl --quiet'
-        //            sh ' gcloud container clusters get-credentials workload-cluster --region=us-east1 --project=gcp-iti-401020'
-        //            sh ' gcloud config set project gcp-iti-401020'
-        //            sh ' gcloud config set compute/zone us-central1-a'
-        //             }
-        //         }
-        //     }
-        // }
 
          stage('Checkout') {
             steps {
@@ -67,8 +32,8 @@ pipeline {
         stage('autunticate mongo') {
             steps {
                 script {
-                            sh 'sudo openssl rand -base64 741 > /mongodb/mongodb-keyfile'
-                            sh 'sudo chmod 0400 /mongodb/mongodb-keyfile'
+                            sh 'sudo openssl rand -base64 741 | sudo tee mongodb/mongodb-keyfile'
+                            sh 'sudo chmod 0400 mongodb/mongodb-keyfile'
                             
                     }
                 }
@@ -79,11 +44,12 @@ pipeline {
             steps {
                 script {
                     withCredentials([file(credentialsId: 'gcp-secret', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) { 
-                        sh 'sudo docker build -t us-central1-docker.pkg.dev/gcp-iti-401020/my-nodejs-repo/mymongo ./mongodb/Dockerfile.mongo'
-                        sh 'sudo docker build -t us-central1-docker.pkg.dev/gcp-iti-401020/my-nodejs-repo/mymongosidecar ./mongodb/Dockerfile.sidecar'
+                        sh 'sudo docker build . -t us-central1-docker.pkg.dev/gcp-iti-401020/my-nodejs-repo/mymongo -f mongodb/Dockerfile.mongo'
+                        sh 'sudo docker build . -t us-central1-docker.pkg.dev/gcp-iti-401020/my-nodejs-repo/mymongosidecar -f  mongodb/Dockerfile.sidecar'
                         sh 'gcloud auth print-access-token | sudo docker login -u oauth2accesstoken --password-stdin  us-central1-docker.pkg.dev'
                         sh 'sudo docker push us-central1-docker.pkg.dev/gcp-iti-401020/my-nodejs-repo/mymongo'
                         sh 'sudo docker push us-central1-docker.pkg.dev/gcp-iti-401020/my-nodejs-repo/mymongosidecar'
+                        
                     }
                 }
             }
@@ -93,7 +59,7 @@ pipeline {
             steps {
                 script {
                     withCredentials([file(credentialsId: 'gcp-secret', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) { 
-                        sh 'sudo docker build -t us-central1-docker.pkg.dev/gcp-iti-401020/my-nodejs-repo/mynode ./nodejs/Dockerfile'
+                        sh 'sudo docker build . -t us-central1-docker.pkg.dev/gcp-iti-401020/my-nodejs-repo/mynode -f ./nodejs/Dockerfile'
                         sh 'gcloud auth print-access-token | sudo docker login -u oauth2accesstoken --password-stdin  us-central1-docker.pkg.dev'
                         sh 'sudo docker push us-central1-docker.pkg.dev/gcp-iti-401020/my-nodejs-repo/mynode'
                     }

@@ -1,25 +1,16 @@
-FROM node:20-slim
+FROM node:latest
 
-# Create app directory
+WORKDIR /usr/src/app
 
-WORKDIR /app
-
-# Install app dependencies
-# A wildcard is used to ensure both package.json AND package-lock.json are copied
-# where available (npm@5+)
-COPY package*.json /app
-
+# Copy package.json and package-lock.json separately to leverage Docker cache
+COPY package*.json ./
 RUN npm install
-# If you are building your code for production
-# RUN npm ci --only=production
 
-# Bundle app source
-COPY . /app
+# Copy the rest of the application code
+COPY . .
 
-ENV DBuser=admin
-ENV DBpass=password
-ENV DBhosts=mongo-0.mongo.default.svc.cluster.local:27017
-
+# Expose the application port
 EXPOSE 3000
 
+# Start Node.js application
 CMD [ "node", "index.js" ]
