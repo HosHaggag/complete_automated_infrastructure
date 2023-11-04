@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: mynodejs-container
-          image: us-east4-docker.pkg.dev/gcp-project-402717/final-project-repository/mynode
+          image: us-central1-docker.pkg.dev/gcp-iti-401020/my-nodejs-repo/mynode
           env:
             - name: DBuser
               value: "admin"

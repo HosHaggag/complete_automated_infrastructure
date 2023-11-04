@@ -44,11 +44,14 @@ pipeline {
             steps {
                 script {
                     withCredentials([file(credentialsId: 'gcp-secret', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) { 
-                        sh 'sudo docker build . -t us-central1-docker.pkg.dev/gcp-iti-401020/my-nodejs-repo/mymongo -f mongodb/Dockerfile.mongo'
-                        sh 'sudo docker build . -t us-central1-docker.pkg.dev/gcp-iti-401020/my-nodejs-repo/mymongosidecar -f  mongodb/Dockerfile.sidecar'
+                        dir('mongodb'){
+                            sh 'ls -l'
+                        sh 'sudo docker build . -t us-central1-docker.pkg.dev/gcp-iti-401020/my-nodejs-repo/mymongo -f Dockerfile.mongo'
+                        sh 'sudo docker build . -t us-central1-docker.pkg.dev/gcp-iti-401020/my-nodejs-repo/mymongosidecar -f Dockerfile.sidecar'
                         sh 'gcloud auth print-access-token | sudo docker login -u oauth2accesstoken --password-stdin  us-central1-docker.pkg.dev'
                         sh 'sudo docker push us-central1-docker.pkg.dev/gcp-iti-401020/my-nodejs-repo/mymongo'
                         sh 'sudo docker push us-central1-docker.pkg.dev/gcp-iti-401020/my-nodejs-repo/mymongosidecar'
+                        }
                         
                     }
                 }
@@ -59,9 +62,13 @@ pipeline {
             steps {
                 script {
                     withCredentials([file(credentialsId: 'gcp-secret', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) { 
-                        sh 'sudo docker build . -t us-central1-docker.pkg.dev/gcp-iti-401020/my-nodejs-repo/mynode -f ./nodejs/Dockerfile'
+                        dir('nodejs'){
+                            sh 'ls -l' 
+                        sh 'sudo docker build . -t us-central1-docker.pkg.dev/gcp-iti-401020/my-nodejs-repo/mynode -f Dockerfile'
                         sh 'gcloud auth print-access-token | sudo docker login -u oauth2accesstoken --password-stdin  us-central1-docker.pkg.dev'
                         sh 'sudo docker push us-central1-docker.pkg.dev/gcp-iti-401020/my-nodejs-repo/mynode'
+                        }
+                      
                     }
                 }
             }
@@ -87,7 +94,7 @@ pipeline {
                     withCredentials([file(credentialsId: 'gcp-secret', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) { 
                         sh 'gcloud container clusters get-credentials workload-cluster --region=us-east1 --project=gcp-iti-401020'
                         sh 'kubectl apply -f ./nodejs/deployment.yaml'
-                        sh 'kubectl apply -f ./nodejs/laod-balancer.yaml'
+                        sh 'kubectl apply -f ./nodejs/load-balancer.yaml'
                     }
                 }
             }
