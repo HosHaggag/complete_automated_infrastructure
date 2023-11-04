@@ -16,6 +16,7 @@ pipeline {
         stage('login to google cloud') {
             steps {
                 withCredentials([file(credentialsId: 'gcp-secret', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) { 
+                    sh 'gcloud -h'
                     sh 'gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS'
                  }
             }
@@ -60,6 +61,7 @@ pipeline {
         stage(' apply') {
             steps {
                 script {
+                    withCredentials([file(credentialsId: 'gcp-secret', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) { 
                     echo ' applying....'
                     if (params.operation == 'destroy') {
                         sh "terraform destroy --var-file=${params.workspace}.tfvars -auto-approve"
@@ -67,7 +69,18 @@ pipeline {
                     }
                     sh "terraform plan --var-file=${params.workspace}.tfvars"
                     sh "terraform apply --var-file=${params.workspace}.tfvars -auto-approve"
+                                         }
                 }
+            }
+        }
+        
+          stage ('configuration') {
+            steps {
+                 if (params.operation == 'apply') {
+                        build job: 'configure_infrastructure'
+                        return
+                    }
+
             }
         }
     }
