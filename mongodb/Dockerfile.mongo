@@ -1,0 +1,11 @@
+FROM mongo:5.0.15
+
+# Copy an Auth key to the container
+COPY mongodb-keyfile /etc/secrets-volume/mongodb-keyfile
+RUN chmod 0400 /etc/secrets-volume/mongodb-keyfile && chown mongodb:mongodb /etc/secrets-volume/mongodb-keyfile 
+
+# Expose MongoDB port
+EXPOSE 27017 
+
+# Set default command to run MongoDB
+CMD ["mongod"]

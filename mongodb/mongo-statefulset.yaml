@@ -33,7 +33,7 @@ spec:
       terminationGracePeriodSeconds: 10
       containers:
         - name: mongo
-          image: us-east4-docker.pkg.dev/gcp-project-402717/final-project-repository/mymongo
+          image: us-central1-docker.pkg.dev/gcp-iti-401020/my-nodejs-repo/mymongo
           args: ["--auth", "--bind_ip_all", "--replSet", "rs0", "--keyFile", "/etc/secrets-volume/mongodb-keyfile"]
           env:
             - name: "MONGO_INITDB_ROOT_USERNAME"
@@ -51,7 +51,7 @@ spec:
               mountPath: /data/db
 
         - name: mongo-sidecar
-          image: us-east4-docker.pkg.dev/gcp-project-402717/final-project-repository/mymongosidecar
+          image: us-central1-docker.pkg.dev/gcp-iti-401020/my-nodejs-repo/mymongosidecar
           env:
             - name: MONGO_SIDECAR_POD_LABELS
               value: "role=mongo,environment=test"
