@@ -53,7 +53,6 @@ private_cluster_config {
     "${var.workload-region}-c", ]
 
 
-  depends_on = [ google_compute_instance.managment_instance ]
   network = var.main_vpc
   subnetwork = var.workload-subnet
 }

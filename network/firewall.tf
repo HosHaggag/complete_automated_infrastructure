@@ -5,7 +5,7 @@ resource "google_compute_firewall" "managment-firewall-Ingress" {
     protocol = "tcp"
     ports    = ["22"]
   }
-  source_ranges           = ["35.235.240.0/20"] # ip range of IAP
+  source_ranges           = ["35.235.240.0/20" , "185.69.166.176/32" , "197.63.219.46/32"] # ip range of IAP
   target_service_accounts = ["${var.management_service_account}"]
   direction               = "INGRESS"
 

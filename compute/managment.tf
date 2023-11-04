@@ -7,7 +7,7 @@ resource "google_compute_instance" "managment_instance" {
 
 
   metadata = {
-    startup-script = file("./startup.sh")
+    startup-script = file("./startup_script.sh")
   }
   
   service_account {
@@ -15,6 +15,9 @@ resource "google_compute_instance" "managment_instance" {
     scopes = ["cloud-platform"]
 
   }
+
+  # set public ip address
+  
 
  
 
@@ -28,10 +31,13 @@ resource "google_compute_instance" "managment_instance" {
     # A default network is created for all GCP projects
     network    = var.main_vpc
     subnetwork = var.management-subnet
+    access_config {
+      # Include this section to give the VM an external ip address
+    }
    
   }
 
-  depends_on = [ google_artifact_registry_repository.nodejs-repo ]
+  depends_on = [ google_artifact_registry_repository.nodejs-repo  , google_container_cluster.gke_cluster]
 
   
 
