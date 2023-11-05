@@ -77,7 +77,7 @@ pipeline {
           stage ('configuration') {
             steps {
                 script {
-                 if (params.operation == 'apply') {
+                 if (params.operation == 'build') {
                         build job: 'configure_infrastructure' , wait: true
                         return
                     }
