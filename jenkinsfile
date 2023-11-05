@@ -78,7 +78,7 @@ pipeline {
             steps {
                 script {
                  if (params.operation == 'apply') {
-                        build job: 'configure_infrastructure'
+                        build job: 'configure_infrastructure' , wait: true
                         return
                     }
                 }
