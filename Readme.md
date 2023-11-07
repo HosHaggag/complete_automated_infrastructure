@@ -254,8 +254,11 @@ Now all the infrastructure is ready, let's deploy our application on it.
     // Note: the second pipe line called "configure_infrastructure" and it will be triggered after the first one is finished.
 
 ### Seems like we are done 🎉
+<br>
 
 
+## Usage
+<br>
 ### You can now access the application and get URL using the following command on terminal
 ```sh
    curl "$(kubectl get svc loadbalancer-node -o jsonpath='{.status.loadBalancer.ingress[0].ip}')"
